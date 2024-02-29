@@ -1,9 +1,12 @@
-import { Outlet } from '@remix-run/react';
+import { Outlet, useNavigation } from '@remix-run/react';
+import clsx from 'clsx';
 
 import { H1 } from '~/components/headings';
 import { ListLinkItem } from '~/components/links';
 
 export default function Component() {
+  const navigation = useNavigation();
+  console.log(navigation.state);
   return (
     <div className="w-full">
       <H1>Your Income</H1>
@@ -28,7 +31,9 @@ export default function Component() {
             </li>
           </ul>
         </section>
-        <Outlet />
+        <section className={clsx('lg:p-8 w-full', navigation.state === 'loading' && 'motion-safe:animate-pulse')}>
+          <Outlet />
+        </section>
       </div>
     </div>
   );
