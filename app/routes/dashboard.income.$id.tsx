@@ -5,6 +5,10 @@ import { useLoaderData } from '@remix-run/react';
 import { H2 } from '~/components/headings';
 import { db } from '~/modules/db.server';
 
+//Remix calls loader unctions on the initial request on the server
+//before rendering React server-side.
+//On the client, Remix fetches loader data on client-side navigations
+//with AJAX requests (fetch requests).
 export async function loader({ params }: LoaderFunctionArgs) {
   const { id } = params;
   const income = await db.invoice.findUnique({ where: { id } });
