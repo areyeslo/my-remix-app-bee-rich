@@ -1,6 +1,7 @@
 import { Outlet } from '@remix-run/react';
 
 import { H1 } from '~/components/headings';
+import { ListLinkItem } from '~/components/links';
 
 export default function Component() {
   return (
@@ -10,21 +11,15 @@ export default function Component() {
         <section className="lg:p-8 w-full lg:max-w-2xl">
           <h2 className="sr-only">All expenses</h2>
           <ul className="flex flex-col">
-            <li>
-              <a href="/dashboard/expenses/1">
-                <p className="text-xl font-semibold">Food</p> <p>$100</p>
-              </a>
-            </li>
-            <li>
-              <a href="/dashboard/expenses/2">
-                <p className="text-xl font-semibold">Transport</p> <p>$100</p>
-              </a>
-            </li>
-            <li>
-              <a href="/dashboard/expenses/3">
-                <p className="text-xl font-semibold">Entertainment </p> <p>$100</p>
-              </a>
-            </li>
+            <ListLinkItem to="/dashboard/expenses/1">
+              <p className="text-xl font-semibold">Food</p> <p>$100</p>
+            </ListLinkItem>
+            <ListLinkItem to="/dashboard/expenses/2">
+              <p className="text-xl font-semibold">Transport</p> <p>$100</p>
+            </ListLinkItem>
+            <ListLinkItem to="/dashboard/expenses/3">
+              <p className="text-xl font-semibold">Entertainment </p> <p>$100</p>
+            </ListLinkItem>
           </ul>
         </section>
         <Outlet />

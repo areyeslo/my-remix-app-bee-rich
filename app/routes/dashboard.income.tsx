@@ -1,6 +1,7 @@
 import { Outlet } from '@remix-run/react';
 
 import { H1 } from '~/components/headings';
+import { ListLinkItem } from '~/components/links';
 
 export default function Component() {
   return (
@@ -11,19 +12,19 @@ export default function Component() {
           <h2 className="sr-only">Total income</h2>
           <ul className="flex flex-col">
             <li>
-              <a href="/dashboard/income/1">
+              <ListLinkItem to="/dashboard/income/1">
                 <p className="text-xl font-semibold">Salary</p> <p>$100</p>
-              </a>
+              </ListLinkItem>
             </li>
             <li>
-              <a href="/dashboard/income/2">
+              <ListLinkItem to="/dashboard/income/2">
                 <p className="text-xl font-semibold">Shares</p> <p>$100</p>
-              </a>
+              </ListLinkItem>
             </li>
             <li>
-              <a href="/dashboard/income/3">
+              <ListLinkItem to="/dashboard/income/3">
                 <p className="text-xl font-semibold">Monthly allowance </p> <p>$100</p>
-              </a>
+              </ListLinkItem>
             </li>
           </ul>
         </section>
