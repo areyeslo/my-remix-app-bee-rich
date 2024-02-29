@@ -3,6 +3,7 @@ import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 
 import { H2 } from '~/components/headings';
+import { FloatingActionLink } from '~/components/links';
 import { db } from '~/modules/db.server';
 
 //A loader function runs server-side before its route component is rendered.
@@ -20,8 +21,11 @@ export default function Component() {
   //Remix's useLoaderData hook provides access to the route module's loader data.
   const expense = useLoaderData<typeof loader>();
   return (
-    <div className="w-full h-full p-8">
-      <H2>{expense.title}</H2> <p>{expense.amount}</p>
-    </div>
+    <>
+      <div className="w-full h-full p-8">
+        <H2>{expense.title}</H2> <p>{expense.amount}</p>
+      </div>
+      <FloatingActionLink to="/dashboard/expenses/">Add expense</FloatingActionLink>
+    </>
   );
 }
