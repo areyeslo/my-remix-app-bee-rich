@@ -3,16 +3,11 @@ import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 
 import { H2 } from '~/components/headings';
+import { db } from '~/modules/db.server';
 
-const data = [
-  { id: 1, title: 'Salary', amount: 100 },
-  { id: 2, title: 'Shares', amount: 100 },
-  { id: 3, title: 'Monthly retirement', amount: 100 },
-];
-
-export function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
   const { id } = params;
-  const income = data.find((income) => income.id === Number(id));
+  const income = await db.invoice.findUnique({ where: { id } });
   if (!income) throw new Response('Not found', { status: 404 });
   return json(income);
 }

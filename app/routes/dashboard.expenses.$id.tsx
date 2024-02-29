@@ -3,20 +3,15 @@ import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 
 import { H2 } from '~/components/headings';
-
-const data = [
-  { id: 1, title: 'Food', amount: 100 },
-  { id: 2, title: 'Transport', amount: 100 },
-  { id: 3, title: 'Entertainment', amount: 100 },
-];
+import { db } from '~/modules/db.server';
 
 //A loader function runs server-side before its route component is rendered.
 //Use to fetch data (on the server) dynamically based on route parameters.
 //Remix provides params argument to access the route parameters of the current
 //URL.
-export function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
   const { id } = params;
-  const expense = data.find((expense) => expense.id === Number(id));
+  const expense = await db.expense.findUnique({ where: { id } });
   if (!expense) throw new Response('Not found', { status: 404 });
   return json(expense);
 }
