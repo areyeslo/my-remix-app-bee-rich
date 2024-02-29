@@ -36,7 +36,7 @@ export default function Component() {
             <ul className="mt-10 w-full flex flex-row gap-5">
               <li className="ml-auto">
                 <NavLink
-                  to={firstInvoice ? `/dashboard/income/${firstInvoice}` : '/dashboard/income'}
+                  to={firstInvoice ? `/dashboard/income/${firstInvoice.id}` : '/dashboard/income'}
                   styleAsActive={location.pathname.startsWith('/dashboard/income')}
                 >
                   Income
