@@ -20,7 +20,11 @@ export default function Component() {
         <Links />
       </head>
       <body className="bg-background dark:bg-darkBackground text-lg text-text dark:text-darkText">
-        <PageTransitionProgressBar /> <Outlet /> <ScrollRestoration /> <Scripts /> <LiveReload />
+        <PageTransitionProgressBar />
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
       </body>
     </html>
   );
