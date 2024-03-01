@@ -1,7 +1,8 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { redirect } from '@remix-run/node';
-import { Form } from '@remix-run/react';
 
+import { Button } from '~/components/buttons';
+import { Form, Input, Textarea } from '~/components/forms';
 import { db } from '~/modules/db.server';
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -28,13 +29,12 @@ export default function Component() {
     //The ?index search parameter tells Remix to submit to the index route module, not
     //the parent module.
     <Form method="post" action="/dashboard/income/?index">
-      <label>Title:</label>
-      <input type="text" name="title" placeholder="Monthly Salary" required />
-      <label>Description:</label>
-      <textarea name="description" />
-      <label>Amount (in USD):</label>
-      <input type="number" defaultValue={0} name="amount" required />
-      <button type="submit">Create</button>
+      <Input label="Title:" type="text" name="title" placeholder="Dividend received" required />
+      <Textarea label="Description:" name="description" />
+      <Input label="Amount (in USD):" type="number" defaultValue={0} name="amount" required />
+      <Button type="submit" isPrimary>
+        Create
+      </Button>
     </Form>
   );
 }
