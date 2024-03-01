@@ -43,7 +43,7 @@ export default function Component() {
                 <p>
                   <b>
                     {Intl.NumberFormat('en-US', { style: 'currency', currency: expense.currencyCode }).format(
-                      expense.amount
+                      expense.amount,
                     )}
                   </b>
                 </p>
