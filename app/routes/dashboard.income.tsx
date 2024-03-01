@@ -34,7 +34,7 @@ export default function Component() {
                 <p>
                   <b>
                     {Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currencyCode }).format(
-                      invoice.amount
+                      invoice.amount,
                     )}
                   </b>
                 </p>

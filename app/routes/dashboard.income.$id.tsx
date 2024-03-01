@@ -3,6 +3,7 @@ import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 
 import { H2 } from '~/components/headings';
+import { FloatingActionLink } from '~/components/links';
 import { db } from '~/modules/db.server';
 
 //Remix calls loader unctions on the initial request on the server
@@ -19,8 +20,11 @@ export async function loader({ params }: LoaderFunctionArgs) {
 export default function Component() {
   const income = useLoaderData<typeof loader>();
   return (
-    <div className="w-full h-full p-8">
-      <H2>{income.title}</H2> <p>{income.amount}</p>
-    </div>
+    <>
+      <div className="w-full h-full p-8">
+        <H2>{income.title}</H2> <p>{income.amount}</p>
+      </div>
+      <FloatingActionLink to="/dashboard/income/">Add Invoice</FloatingActionLink>
+    </>
   );
 }
