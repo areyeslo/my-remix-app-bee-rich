@@ -12,6 +12,10 @@ import { db } from '~/modules/db.server';
 
 //Best Practice: In Remix, we aim to fetch data in route modules instead of components. Avoid granular data
 //fetching at the component level to optimize data loading and prevent fetch waterfalls.
+
+//Remix refreshes all loader data by re-fetching from all active loader functions after
+//executing an action function, just like a full-page reload would do on a HTML form
+//submission.
 export async function loader() {
   const expenses = await db.expense.findMany({ orderBy: { createdAt: 'desc' } });
   console.log(`expenses retrieved: ${expenses}`);
