@@ -35,8 +35,11 @@ export default function Component() {
             </ul>
             <ul className="mt-10 w-full flex flex-row gap-5">
               <li className="ml-auto">
+                {/* If prefetch is set to intent, then Remix starts prefetching once the user focuses or 
+                hovers over the link */}
                 <NavLink
                   to={firstInvoice ? `/dashboard/income/${firstInvoice.id}` : '/dashboard/income'}
+                  prefetch="intent"
                   styleAsActive={location.pathname.startsWith('/dashboard/income')}
                 >
                   Income
@@ -45,6 +48,7 @@ export default function Component() {
               <li className="mr-auto">
                 <NavLink
                   to={firstExpense ? `/dashboard/expenses/${firstExpense.id}` : '/dashboard/expenses'}
+                  prefetch="intent"
                   styleAsActive={location.pathname.startsWith('/dashboard/expenses')}
                 >
                   Expenses

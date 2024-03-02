@@ -1,5 +1,6 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { redirect } from '@remix-run/node';
+import { useNavigation } from '@remix-run/react';
 
 import { Button } from '~/components/buttons';
 import { Form, Input, Textarea } from '~/components/forms';
@@ -27,6 +28,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Component() {
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state !== 'idle' && navigation.formAction === '/dashboard/expenses/?index';
   return (
     //The ?index search parameter tells Remix to submit to the index route module, not
     //the parent module.
@@ -34,8 +37,8 @@ export default function Component() {
       <Input label="Title:" type="text" name="title" placeholder="Dinner for Two" required />
       <Textarea label="Description:" name="description" />
       <Input label="Amount (in USD):" type="number" defaultValue={0} name="amount" required />
-      <Button type="submit" isPrimary>
-        Create
+      <Button type="submit" disabled={isSubmitting} isPrimary>
+        {isSubmitting ? 'Creating...' : 'Create'}
       </Button>
     </Form>
   );

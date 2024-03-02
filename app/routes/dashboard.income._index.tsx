@@ -5,6 +5,8 @@ import { Button } from '~/components/buttons';
 import { Form, Input, Textarea } from '~/components/forms';
 import { db } from '~/modules/db.server';
 
+//Loaders handle HTTP GET requests, while action functions receive all other incoming
+//HTTP requests.
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const title = formData.get('title');
