@@ -1,5 +1,5 @@
 import { json } from '@remix-run/node';
-import { Outlet, useLoaderData, useNavigation } from '@remix-run/react';
+import { Outlet, useLoaderData, useNavigation, useParams } from '@remix-run/react';
 import clsx from 'clsx';
 
 import { H1 } from '~/components/headings';
@@ -31,6 +31,9 @@ export default function Component() {
   //useLoaderData returns the data of the route module that the hook is called in.
   const expenses = useLoaderData<typeof loader>();
 
+  //useParam hook to access the id route parameter of the expense details page.
+  const { id } = useParams();
+
   return (
     <div className="w-full">
       <H1>Your expenses</H1>
@@ -39,7 +42,15 @@ export default function Component() {
           <h2 className="sr-only">All expenses</h2>
           <ul className="flex flex-col">
             {expenses.map((expense) => (
-              <ListLinkItem key={expense.id} to={`/dashboard/expenses/${expense.id}`}>
+              <ListLinkItem
+                key={expense.id}
+                to={`/dashboard/expenses/${expense.id}`}
+                isActive={expense.id === id}
+                deleteProps={{
+                  ariaLabel: `Delete expense ${expense.title}`,
+                  action: `/dashboard/expenses/${expense.id}`,
+                }}
+              >
                 <p>
                   <i>{new Date(expense.createdAt).toLocaleDateString('en-US')}</i>
                 </p>
