@@ -1,5 +1,5 @@
 import type { FormProps, LinkProps as RemixLinkProps } from '@remix-run/react';
-import { Form, Link as RemixLink, NavLink as RemixNavLink, useFetcher, useNavigation } from '@remix-run/react';
+import { Link as RemixLink, NavLink as RemixNavLink, useFetcher } from '@remix-run/react';
 import { clsx } from 'clsx';
 import type { HTMLAttributes } from 'react';
 
@@ -108,6 +108,8 @@ export function ListLinkItem({ isActive, className = '', to, deleteProps, childr
         {children}
       </RemixNavLink>
       {deleteProps && (
+        // Creates isolated forms for every item in a list.
+        // This ensures each item has its own navigation state.
         <fetcher.Form className="p-8 ml-auto" method="POST" action={deleteProps.action}>
           <button
             type="submit"

@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { useActionData, useLoaderData, useNavigation } from '@remix-run/react';
 
 import { Button } from '~/components/buttons';
@@ -29,9 +29,9 @@ export async function action({ params, request }: ActionFunctionArgs) {
     return updateInvoice(formData, id);
   }
 
-  // if(intent ==='delete'){
-  //   return deleteInvoice(id);
-  // }
+  if (intent === 'delete') {
+    return deleteInvoice(request, id);
+  }
 
   throw new Response('Bad request', { status: 400 });
 }
@@ -54,6 +54,21 @@ export async function updateInvoice(formData: FormData, id: string) {
   await db.invoice.update({ where: { id }, data: { title, description, amount: amountNumber } });
 
   return json({ success: true });
+}
+
+export async function deleteInvoice(request: Request, id: string) {
+  const referer = request.headers.get('referer');
+  const redirectPath = referer || '/dashboard/income';
+
+  try {
+    await db.invoice.delete({ where: { id } });
+  } catch (err) {
+    throw new Response('Not found', { status: 404 });
+  }
+  if (redirectPath.includes(id)) {
+    return redirect('/dashboard/invoice');
+  }
+  return redirect(redirectPath);
 }
 
 export default function Component() {
