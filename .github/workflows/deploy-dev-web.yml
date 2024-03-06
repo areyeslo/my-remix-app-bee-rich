@@ -1,0 +1,35 @@
+# This workflow will build and push a new frontend container image to Openshift
+name: Frontend Build and Push (Dev)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy-web:
+    runs-on: ubuntu-latest
+    name: remix-app build
+    steps:
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@master
+
+      - name: "Build frontend"
+        working-directory: "./app"
+        run: |
+          docker build -t image-registry.apps.silver.devops.gov.bc.ca/b08a99-tools/remix-app:develop .
+          docker images
+
+      # Uses the builder service account token
+      - name: "Push frontend to Openshift"
+        uses: docker/login-action@v2
+        with:
+          registry: image-registry.apps.silver.devops.gov.bc.ca
+          username: builder
+          password: ${{ secrets.SILVER_TOOLS_BUILDER_TOKEN }}
+
+      - name: "Push image"
+        run: |
+          docker push image-registry.apps.silver.devops.gov.bc.ca/b08a99-tools/remix-app:develop
