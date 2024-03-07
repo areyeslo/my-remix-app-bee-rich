@@ -1,5 +1,5 @@
 # This workflow will build and push a new frontend container image to Openshift
-name: Frontend Build and Push (Dev)
+name: Remix App Build and Push (Dev)
 
 on:
   push:
