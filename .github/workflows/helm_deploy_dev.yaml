@@ -1,0 +1,30 @@
+name: Helm Upgrade Remix app DEV
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'openshift/remixapp/**'
+  workflow_dispatch:
+
+jobs:
+  helm_upgrade_dev:
+    runs-on: ubuntu-latest
+    name: Helm Uprade Remix app Develop
+
+    steps:
+      - name: Obtain code from git.
+        uses: actions/checkout@v3
+
+      - name: Openshift Cluster Login
+        uses: redhat-actions/oc-login@v1.2
+        with:
+          openshift_server_url: https://api.sandbox-m4.g2pi.p1.openshiftapps.com:6443
+          openshift_token: ${{ secrets.SILVER_DEV_SA_PIPELINE_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: d2cb5f-dev
+
+      - name: Apply charts to OCP
+        working-directory: openshift/remixapp
+        run: |
+          helm upgrade --namespace arturoreyeslopez-dev -f values-dev.yaml remixapp .
