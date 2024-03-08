@@ -12,6 +12,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm install --production=false
+RUN mkdir /.npm && chown -R 1004000000:0 "/.npm"
 
 # Setup production node_modules
 FROM base as production-deps
