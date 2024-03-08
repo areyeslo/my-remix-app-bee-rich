@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "app/**"
+      - './**'
   workflow_dispatch:
 
 jobs:
@@ -13,23 +13,23 @@ jobs:
     runs-on: ubuntu-latest
     name: remix-app build
     steps:
-      - name: "Checkout GitHub Action"
+      - name: 'Checkout GitHub Action'
         uses: actions/checkout@master
 
-      - name: "Build frontend"
-        working-directory: "./app"
+      - name: 'Build Remix App'
+        working-directory: './'
         run: |
-          docker build -t image-registry.apps.silver.devops.gov.bc.ca/b08a99-tools/remix-app:develop .
+          pwd
+          docker build -t myremixapp:1.3 .
           docker images
+          docker image tag myremixapp:1.3 arlopez/myremixapp:1.3
 
-      # Uses the builder service account token
-      - name: "Push frontend to Openshift"
+      - name: 'Login to Docker Hub'
         uses: docker/login-action@v2
         with:
-          registry: image-registry.apps.silver.devops.gov.bc.ca
-          username: builder
-          password: ${{ secrets.SILVER_TOOLS_BUILDER_TOKEN }}
+          username: arlopez
+          password: ${{ secrets.ARLOPEZ }}
 
-      - name: "Push image"
+      - name: 'Push image'
         run: |
-          docker push image-registry.apps.silver.devops.gov.bc.ca/b08a99-tools/remix-app:develop
+          docker image push arlopez/myremixapp:1.3

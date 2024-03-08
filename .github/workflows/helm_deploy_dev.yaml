@@ -27,4 +27,6 @@ jobs:
       - name: Apply charts to OCP
         working-directory: openshift/remixapp
         run: |
-          helm upgrade --namespace arturoreyeslopez-dev -f values.yaml remixapp .
+          pwd
+          helm history myremixapp 
+          helm upgrade -f values.yaml myremixapp .

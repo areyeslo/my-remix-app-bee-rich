@@ -11,7 +11,7 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm install --production=false
+RUN npm install --production=false && npm update chokidar
 RUN mkdir /.npm && chown -R 1004000000:0 "/.npm"
 
 # Setup production node_modules
@@ -38,6 +38,7 @@ ADD prisma .
 RUN npx prisma generate
 
 ADD . .
+RUN chmod -R 775 prisma
 RUN npm run build
 
 # Finally, build the production image with minimal footprint
@@ -53,6 +54,7 @@ COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
 COPY --from=build /app/build /app/build
 COPY --from=build /app/public /app/public
 ADD . .
+RUN chmod -R 775 prisma
 
 # Container exposes port 3000
 EXPOSE 3000
