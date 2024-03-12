@@ -48,6 +48,9 @@ export function ErrorBoundary() {
   const { id } = useParams();
   let heading = 'Something went wrong';
   let message = `Apologies, something went wrong on our end, please try again.`;
+  //isRouteErrorResponse helper check whether the error object is a Response object. If yes,
+  //then we can read the status code and other fileds of the Response object to provide a
+  //specific error.
   if (isRouteErrorResponse(error) && error.status === 404) {
     heading = 'Expense not found';
     message = `Apologies, the expense with the id ${id} cannot be found.`;

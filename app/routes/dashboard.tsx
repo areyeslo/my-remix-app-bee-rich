@@ -15,6 +15,7 @@ export async function loader() {
   return json({ firstExpense, firstInvoice });
 }
 
+// When an error is thrown, it bubbles upward through the route hierarchy until Remix finds the nearest boundary.
 export function ErrorBoundary() {
   const error = useRouteError();
   const errorMessage = error instanceof Error && error.message;
@@ -45,6 +46,8 @@ type LayoutProps = {
 };
 
 function Layout({ firstExpense, firstInvoice, children }: LayoutProps) {
+  //Removed useLoaderData call. Error boundaries cannot call useLoaderData.
+  //We must pass the loader data as optional props.
   //Remix's useLocation hook lets us access a global location object with information
   //about the current URL.
   const location = useLocation();
@@ -53,7 +56,7 @@ function Layout({ firstExpense, firstInvoice, children }: LayoutProps) {
       <header>
         <Container className="p-4 mb-10">
           <nav>
-            <ul className="w-full flex flex-row gap-5 font-bold               text-lg lg:text-2xl">
+            <ul className="w-full flex flex-row gap-5 font-bold text-lg lg:text-2xl">
               <li>
                 <RemixLink to="/">BeeRich</RemixLink>
               </li>
