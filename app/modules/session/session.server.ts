@@ -87,12 +87,8 @@ const { getSession, commitSession, destroySession } = createCookieSessionStorage
 
 export async function createUserSession(user: User, headers = new Headers()) {
   const session = await getSession();
-  console.log(`session: ${JSON.stringify(session)}`);
   session.set('userId', user.id);
-  console.log(`session (userId): ${JSON.stringify(session)}`);
-  console.log(`headers: ${JSON.stringify(headers)}`);
   headers.set('Set-Cookie', await commitSession(session));
-  console.log(`headers (modified): ${JSON.stringify(headers)}`);
   return headers;
 }
 

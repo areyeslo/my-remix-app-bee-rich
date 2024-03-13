@@ -30,7 +30,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
   try {
     const user = await registerUser({ name, email, password });
-    console.log(`user: ${JSON.stringify(user)}`);
     return redirect('/dashboard', { headers: await createUserSession(user) });
   } catch (error: any) {
     return json({ error: error?.message || 'Something went wrong.' });

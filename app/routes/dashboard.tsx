@@ -3,6 +3,7 @@ import { json, SerializeFrom } from '@remix-run/node';
 import { Link as RemixLink, Outlet, useLoaderData, useLocation, useRouteError } from '@remix-run/react';
 
 import { Container } from '~/components/containers';
+import { Form } from '~/components/forms';
 import { H1 } from '~/components/headings';
 import { NavLink } from '~/components/links';
 import { db } from '~/modules/db.server';
@@ -61,7 +62,9 @@ function Layout({ firstExpense, firstInvoice, children }: LayoutProps) {
                 <RemixLink to="/">BeeRich</RemixLink>
               </li>
               <li className="ml-auto">
-                <RemixLink to="/404">Log out</RemixLink>
+                <Form method="POST" action="/logout">
+                  <button type="submit">Log out</button>
+                </Form>
               </li>
             </ul>
             <ul className="mt-10 w-full flex flex-row gap-5">
