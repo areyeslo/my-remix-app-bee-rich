@@ -3,7 +3,7 @@ import { json } from '@remix-run/node';
 import { Form, Outlet, useLoaderData, useLocation, useNavigation, useParams, useSearchParams } from '@remix-run/react';
 import clsx from 'clsx';
 
-import { Input } from '~/components/forms';
+import { SearchInput } from '~/components/forms';
 import { H1 } from '~/components/headings';
 import { ListLinkItem } from '~/components/links';
 import { db } from '~/modules/db.server';
@@ -26,7 +26,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     orderBy: { createdAt: 'desc' },
     where: { title: { contains: searchString ? searchString : '' } },
   });
-  console.log(`expenses retrieved: ${expenses}`);
   return json(expenses);
 }
 
@@ -45,7 +44,12 @@ export default function Component() {
   // nand work with the browser's back and forward buttons.
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
-  console.log(`searchQuery: ${searchQuery}`);
+
+  // useSubmit hook lets us submit forms programmatically. Use to retrigger the
+  // /dashboard/expenses route module's loader function so that the loader data
+  // updates.
+  // Submission handled inside Search Input component
+  // const submit = useSubmit();
 
   //useParam hook to access the id route parameter of the expense details page.
   const { id } = useParams();
@@ -58,7 +62,7 @@ export default function Component() {
           <h2 className="sr-only">All expenses</h2>
           {/* include action to point to the current URL path */}
           <Form method="GET" action={location.pathname}>
-            <Input name="q" type="search" label="Search by title" defaultValue={searchQuery} />
+            <SearchInput name="q" type="search" label="Search by title" defaultValue={searchQuery} />
           </Form>
           <ul className="flex flex-col">
             {expenses.map((expense) => (
