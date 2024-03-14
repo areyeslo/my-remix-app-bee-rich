@@ -1,4 +1,4 @@
-import type { LinksFunction, MetaFunction } from '@remix-run/node';
+import type { LinksFunction, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   Links,
@@ -13,7 +13,14 @@ import {
 import { H1 } from './components/headings';
 import { ButtonLink } from './components/links';
 import { PageTransitionProgressBar } from './components/progress';
+import { getUser } from './modules/session/session.server';
 import tailwindCSS from './styles/tailwind.css';
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  // getUser returns a user object without the password property.
+  const user = await getUser(request);
+  return { user };
+}
 
 export const meta: MetaFunction = () => {
   return [{ title: 'BeeRich' }];

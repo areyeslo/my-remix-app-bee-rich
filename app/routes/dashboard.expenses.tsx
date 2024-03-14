@@ -7,6 +7,7 @@ import { SearchInput } from '~/components/forms';
 import { H1 } from '~/components/headings';
 import { ListLinkItem } from '~/components/links';
 import { db } from '~/modules/db.server';
+import { requireUserId } from '~/modules/session/session.server';
 
 //loader functions are Remix's HTTP GET request handlers and work with request and response objects
 //that follow the Fetch API's Request-Response interface.
@@ -19,12 +20,16 @@ import { db } from '~/modules/db.server';
 //executing an action function, just like a full-page reload would do on a HTML form
 //submission.
 export async function loader({ request }: LoaderFunctionArgs) {
+  const userId = await requireUserId(request);
   const url = new URL(request.url);
   const searchString = url.searchParams.get('q');
 
   const expenses = await db.expense.findMany({
     orderBy: { createdAt: 'desc' },
-    where: { title: { contains: searchString ? searchString : '' } },
+    where: {
+      userId,
+      title: { contains: searchString ? searchString : '' },
+    },
   });
   return json(expenses);
 }

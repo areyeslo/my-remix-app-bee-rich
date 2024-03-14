@@ -1,4 +1,4 @@
-import type { ActionFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { useActionData, useNavigation } from '@remix-run/react';
 
@@ -7,7 +7,7 @@ import { Card } from '~/components/containers';
 import { Form, Input } from '~/components/forms';
 import { H1 } from '~/components/headings';
 import { InlineError } from '~/components/texts';
-import { createUserSession, loginUser } from '~/modules/session/session.server';
+import { createUserSession, getUserId, loginUser } from '~/modules/session/session.server';
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -28,6 +28,18 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (error: any) {
     return json({ error: error?.message || 'Something went wrong.' });
   }
+}
+
+// If a session cookie is appended to the request and userId exists,
+// then we can be sure that the user has already been authenticated.
+// In this case, we redirect to the dashboard. Otherwise, we show the
+// login or signup page.
+export async function loader({ request }: LoaderFunctionArgs) {
+  const userId = await getUserId(request);
+  if (userId) {
+    return redirect('/dashboard');
+  }
+  return {};
 }
 
 export default function Component() {

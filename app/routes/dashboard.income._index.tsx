@@ -4,10 +4,12 @@ import { redirect } from '@remix-run/node';
 import { Button } from '~/components/buttons';
 import { Form, Input, Textarea } from '~/components/forms';
 import { db } from '~/modules/db.server';
+import { requireUserId } from '~/modules/session/session.server';
 
 //Loaders handle HTTP GET requests, while action functions receive all other incoming
 //HTTP requests.
 export async function action({ request }: ActionFunctionArgs) {
+  const userId = await requireUserId(request);
   const formData = await request.formData();
   const title = formData.get('title');
   const description = formData.get('description');
@@ -22,7 +24,9 @@ export async function action({ request }: ActionFunctionArgs) {
     throw Error('something went wrong');
   }
 
-  const income = await db.invoice.create({ data: { title, description, amount: amountNumber, currencyCode: 'USD' } });
+  const income = await db.invoice.create({
+    data: { title, description, amount: amountNumber, currencyCode: 'USD', user: { connect: { id: userId } } },
+  });
   return redirect(`/dashboard/income/${income.id}`);
 }
 

@@ -14,30 +14,37 @@ import { Form, Input, Textarea } from '~/components/forms';
 import { H2 } from '~/components/headings';
 import { FloatingActionLink } from '~/components/links';
 import { db } from '~/modules/db.server';
+import { requireUserId } from '~/modules/session/session.server';
 
 //A loader function runs server-side before its route component is rendered.
 //Use to fetch data (on the server) dynamically based on route parameters.
 //Remix provides params argument to access the route parameters of the current
 //URL.
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const userId = await requireUserId(request);
   const { id } = params;
-  const expense = await db.expense.findUnique({ where: { id } });
+  if (!id) throw Error('id route parameter must be defined');
+  //id_userId is a composite key used to query the expense entity.
+  //Combining these two values into a composite key ('id_userId') allows the loader
+  // function to fetch the expense that matches both the provided id and userId.
+  const expense = await db.expense.findUnique({ where: { id_userId: { id, userId } } });
   if (!expense) throw new Response('Not found', { status: 404 });
   return json(expense);
 }
 
 export async function action({ params, request }: ActionFunctionArgs) {
+  const userId = await requireUserId(request);
   const { id } = params;
   if (!id) throw Error('id route parameter must be defined');
   const formData = await request.formData();
 
   const intent = formData.get('intent');
   if (intent === 'delete') {
-    return deleteExpense(request, id);
+    return deleteExpense(request, id, userId);
   }
 
   if (intent === 'update') {
-    return updateExpense(formData, id);
+    return updateExpense(formData, id, userId);
   }
 
   throw new Response('Bad request', { status: 400 });
@@ -66,7 +73,7 @@ export function ErrorBoundary() {
   );
 }
 
-async function updateExpense(formData: FormData, id: string): Promise<Response> {
+async function updateExpense(formData: FormData, id: string, userId: string): Promise<Response> {
   const title = formData.get('title');
   const description = formData.get('description');
   const amount = formData.get('amount');
@@ -81,16 +88,16 @@ async function updateExpense(formData: FormData, id: string): Promise<Response> 
     throw Error('something went wrong');
   }
 
-  await db.expense.update({ where: { id }, data: { title, description, amount: amountNumber } });
+  await db.expense.update({ where: { id_userId: { id, userId } }, data: { title, description, amount: amountNumber } });
 
   return json({ success: true });
 }
 
-async function deleteExpense(request: Request, id: string): Promise<Response> {
+async function deleteExpense(request: Request, id: string, userId: string): Promise<Response> {
   const referer = request.headers.get('referer');
   const redirectPath = referer || '/dashboard/expenses';
   try {
-    await db.expense.delete({ where: { id } });
+    await db.expense.delete({ where: { id_userId: { id, userId } } });
   } catch (err) {
     throw new Response('Not found', { status: 404 });
   }

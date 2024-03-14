@@ -5,10 +5,12 @@ import { useNavigation } from '@remix-run/react';
 import { Button } from '~/components/buttons';
 import { Form, Input, Textarea } from '~/components/forms';
 import { db } from '~/modules/db.server';
+import { requireUserId } from '~/modules/session/session.server';
 
 //We use loader functions to handle HTTP GET requests.
 //Remix's action function is called for all other HTTP requests to the route, such as POST requests.
 export async function action({ request }: ActionFunctionArgs) {
+  const userId = await requireUserId(request);
   const formData = await request.formData();
   const title = formData.get('title');
   const description = formData.get('description');
@@ -23,7 +25,12 @@ export async function action({ request }: ActionFunctionArgs) {
     throw Error('something went wrong');
   }
 
-  const expense = await db.expense.create({ data: { title, description, amount: amountNumber, currencyCode: 'USD' } });
+  // Prisma connect: You can connect an existing user to a new or existing expense
+  // The following connects an existing userId to the new expense.
+  // Used to establish relationships between different tables/entities in the database.
+  const expense = await db.expense.create({
+    data: { title, description, amount: amountNumber, currencyCode: 'USD', user: { connect: { id: userId } } },
+  });
   return redirect(`/dashboard/expenses/${expense.id}`);
 }
 

@@ -14,18 +14,26 @@ import { Form, Input, Textarea } from '~/components/forms';
 import { H2 } from '~/components/headings';
 import { FloatingActionLink } from '~/components/links';
 import { db } from '~/modules/db.server';
+import { requireUserId } from '~/modules/session/session.server';
 
 //Remix calls loader unctions on the initial request on the server
 //before rendering React server-side.
 //On the client, Remix fetches loader data on client-side navigations
 //with AJAX requests (fetch requests).
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const userId = await requireUserId(request);
   const { id } = params;
-  const income = await db.invoice.findUnique({ where: { id } });
+
+  if (!id) throw Error('id route parameter must be defined');
+
+  const income = await db.invoice.findUnique({ where: { id_userId: { id, userId } } });
+
   if (!income) throw new Response('Not found', { status: 404 });
+
   return json(income);
 }
 export async function action({ params, request }: ActionFunctionArgs) {
+  const userId = await requireUserId(request);
   const { id } = params;
 
   if (!id) throw Error('id route parameter must be defined');
@@ -34,11 +42,11 @@ export async function action({ params, request }: ActionFunctionArgs) {
   const intent = formData.get('intent');
 
   if (intent === 'update') {
-    return updateInvoice(formData, id);
+    return updateInvoice(formData, id, userId);
   }
 
   if (intent === 'delete') {
-    return deleteInvoice(request, id);
+    return deleteInvoice(request, id, userId);
   }
 
   throw new Response('Bad request', { status: 400 });
@@ -64,7 +72,7 @@ export function ErrorBoundary() {
   );
 }
 
-export async function updateInvoice(formData: FormData, id: string) {
+export async function updateInvoice(formData: FormData, id: string, userId: string) {
   const title = formData.get('title');
   const description = formData.get('description');
   const amount = formData.get('amount');
@@ -79,17 +87,17 @@ export async function updateInvoice(formData: FormData, id: string) {
     throw Error('Amount is not number after conversion');
   }
 
-  await db.invoice.update({ where: { id }, data: { title, description, amount: amountNumber } });
+  await db.invoice.update({ where: { id_userId: { id, userId } }, data: { title, description, amount: amountNumber } });
 
   return json({ success: true });
 }
 
-export async function deleteInvoice(request: Request, id: string) {
+export async function deleteInvoice(request: Request, id: string, userId: string) {
   const referer = request.headers.get('referer');
   const redirectPath = referer || '/dashboard/income';
 
   try {
-    await db.invoice.delete({ where: { id } });
+    await db.invoice.delete({ where: { id_userId: { id, userId } } });
   } catch (err) {
     throw new Response('Not found', { status: 404 });
   }

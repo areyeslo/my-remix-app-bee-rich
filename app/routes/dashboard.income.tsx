@@ -1,29 +1,25 @@
 import type { LoaderFunctionArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import {
-  Form,
-  Outlet,
-  useLoaderData,
-  useLocation,
-  useNavigation,
-  useParams,
-  useSearchParams,
-  useSubmit,
-} from '@remix-run/react';
+import { Form, Outlet, useLoaderData, useLocation, useNavigation, useParams, useSearchParams } from '@remix-run/react';
 import clsx from 'clsx';
 
-import { Input } from '~/components/forms';
+import { SearchInput } from '~/components/forms';
 import { H1 } from '~/components/headings';
 import { ListLinkItem } from '~/components/links';
 import { db } from '~/modules/db.server';
+import { requireUserId } from '~/modules/session/session.server';
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  const userId = await requireUserId(request);
   const url = new URL(request.url);
   const searchString = url.searchParams.get('q');
 
   const invoice = await db.invoice.findMany({
     orderBy: { createdAt: 'desc' },
-    where: { title: { contains: searchString ? searchString : '' } },
+    where: {
+      userId,
+      title: { contains: searchString ? searchString : '' },
+    },
   });
 
   return json(invoice);
@@ -40,8 +36,6 @@ export default function Component() {
   const searchQuery = searchParams.get('q') || '';
   const { id } = useParams();
 
-  const submit = useSubmit();
-
   return (
     <div className="w-full">
       <H1>Your Income</H1>
@@ -49,13 +43,7 @@ export default function Component() {
         <section className="lg:p-8 w-full lg:max-w-2xl">
           <h2 className="sr-only">Total income</h2>
           <Form method="GET" action={location.pathname}>
-            <Input
-              name="q"
-              type="search"
-              label="Search by title"
-              defaultValue={searchQuery}
-              onChange={(e) => submit(e.target.form)}
-            />
+            <SearchInput name="q" type="search" label="Search by title" defaultValue={searchQuery} />
           </Form>
           <ul className="flex flex-col">
             {invoices.map((invoice) => (

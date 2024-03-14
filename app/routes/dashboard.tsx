@@ -1,5 +1,5 @@
 import type { Expense, Invoice } from '@prisma/client';
-import { json, SerializeFrom } from '@remix-run/node';
+import { json, LoaderFunctionArgs, SerializeFrom } from '@remix-run/node';
 import { Link as RemixLink, Outlet, useLoaderData, useLocation, useRouteError } from '@remix-run/react';
 
 import { Container } from '~/components/containers';
@@ -7,10 +7,13 @@ import { Form } from '~/components/forms';
 import { H1 } from '~/components/headings';
 import { NavLink } from '~/components/links';
 import { db } from '~/modules/db.server';
+import { requireUserId } from '~/modules/session/session.server';
 
-export async function loader() {
-  const firstExpenseQuery = db.expense.findFirst({ orderBy: { createdAt: 'desc' } });
-  const firstInvoiceQuery = db.invoice.findFirst({ orderBy: { createdAt: 'desc' } });
+export async function loader({ request }: LoaderFunctionArgs) {
+  const userId = await requireUserId(request);
+
+  const firstExpenseQuery = db.expense.findFirst({ orderBy: { createdAt: 'desc' }, where: { userId } });
+  const firstInvoiceQuery = db.invoice.findFirst({ orderBy: { createdAt: 'desc' }, where: { userId } });
 
   const [firstExpense, firstInvoice] = await Promise.all([firstExpenseQuery, firstInvoiceQuery]);
   return json({ firstExpense, firstInvoice });
